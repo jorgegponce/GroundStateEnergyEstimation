@@ -19,28 +19,34 @@ the initial $\rho$ is taken to be the Hartree-Fock solution.
 
 - Created OpenFermion Hamiltonian
 - Translated the Hamiltonian into Qulacs observable object
+- Created Trotterized Quantum Circuit for time evolution
+
+### Ongoing
+
+- Prepare HF state
 
 
 ### To-Do:
 
-2. Prepare the Hartree-Fock solution to the 1D Hubbard Hamiltonian
-3. Create the time evolution unitary with Qulacs/OpenFermion (unsure about which one to use)
-5. Create circuit with Qulacs
+- Implement the controlled version of the time evolution Quantum Circuit
 
 
 ### Questions:
-- Qulacs Observables:
-    - Why should I treat the hamiltonian as an Observable in Qulacs? From what I understood, the circuit requires to do controlled time evolution state $\rho$ and then measuring the ancilla qubit. However, they measure on the computational basis, and to perform time evolution in Qulacs we need $e^{-i j H\tau}$ as a gate, whereas observables cannot update quantum states.
 
-- OpenFermion Hamiltonian:
-    - Should the tunneling constant (hopping integral) be positive or negative?
-    - Should I stick to the Jordan-Wigner mapping or should I use Bravyi-Kitaev? When should I prefer one over the other?
-    -  How does the open boundary condition affect the Hamiltonian? I am assuming that the open boundary condition translates to the following argument when constructing it with OpenFermion:
-    
-                periodic = False
+
+
+- Qulacs circuit methods
+    - I am nort sure how to create the control version of the circuit. So far, I have created the Trotterized circuit to time evolve the qubits. However, the only method I found to do so in Qulacs so far is:
+
+                circuit.add_observable_rotation_gate(qulacs_hamiltonian, angle, t_slice)
+
+    However, we need a $N + 1$ qubit circuit where $N$ is trhe number of qubits for the Hamiltonian. Thus, my approach so far was to create a $N + 1$ qubit circuit 
+
+                circuit = QuantumCircuit(n_qubits+1)
+
+    and then add the trotterized gates. But when I do so, the gates will only act on $N$ qubits so how do I know which qubit is the ancilla? In othwer words, how do I spexcify Qulacs where to add this trotterized circuit?
+
+    - On a similar note, is there some sort of built-in function to turn this circuit into a controlled-operator? If not, what would be the best approach to turn this into a cotrolled operation?
 
 - Hartree-Fock initial state preparation
-    - How do I prepare this state on a quantum computer? They cite a reference (https://doi.org/10.1021/acscentsci.8b00788) where they seem to describe a procedure to do so, but, from what I read, I don't think it is clear if this is what they used to prepare the hartree-fock state.
-
-- Qulacs time evolution unitary:
-    - How should I approach this? Should I use Trotterization to approximate it? Or should I diagonalize the Hamiltonian and build the $e^{-i j H\tau}$ operator like that? From Appendix D, it seems like the authors used Trotter (at least for their analysis) but I am a little confused as to what the best approach is. It seems like OpenFermion allows me to easily do both direct exponentiantion and Trotterization, but one of the first Qulacs examples just builds the $e^{-i j H\tau}$ by diagonalizing the Hamiltonian.
+    - Thanks so much for the resources you provided. I understand how to prepare the HF state now, but I am just a little unsure about how many electron we have in our systrem (a 1D Hydrogen chain). I would have guessed that we have as many electrons as we have sites, thus for a 5 site chain we have a 10 qubit operator for which the HF state is $|1111100000>$. Is this correct?
