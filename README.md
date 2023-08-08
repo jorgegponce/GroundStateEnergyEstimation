@@ -18,35 +18,22 @@ the initial $\rho$ is taken to be the Hartree-Fock solution.
 ### Progress:
 
 - Created OpenFermion Hamiltonian
-- Translated the Hamiltonian into Qulacs observable object
-- Created Trotterized Quantum Circuit for time evolution
+- Translated the Hamiltonian into Pennylane observable object
+- Prepared HF state
+- Trotterized the Circuit and implemented the $e^{i\sigma \theta}$ gates
+- Created the discrete distribuition from which to sample $\{J_k\}$
+- Defined the random varaibles for the Hadamard test based on the outcome of the circuit
 
 ### Ongoing
 
-- Prepare HF state
-
+- Calculate the estimator $G(x)$
 
 ### To-Do:
 
-- Implement the controlled version of the time evolution Quantum Circuit
-
+- Recover the graphs from the paper
+- Implement their CERTIFY method
 
 ### Questions:
 
+I have been having a hard time nunmerically intergating the functions. The calculations for a single estimator calculation take a really long time, and from what I see in the paper, they use a sample size of 3000 for each approximate CDF evaluation. Is there a better way to integrate numerically the necessary functions? (the Mollifier functions and its fourier transform). These integrals also fail to converge.
 
-
-- Qulacs circuit methods
-    - I am nort sure how to create the control version of the circuit. So far, I have created the Trotterized circuit to time evolve the qubits. However, the only method I found to do so in Qulacs so far is:
-
-                circuit.add_observable_rotation_gate(qulacs_hamiltonian, angle, t_slice)
-
-    However, we need a $N + 1$ qubit circuit where $N$ is trhe number of qubits for the Hamiltonian. Thus, my approach so far was to create a $N + 1$ qubit circuit 
-
-                circuit = QuantumCircuit(n_qubits+1)
-
-    and then add the trotterized gates. But when I do so, the gates will only act on $N$ qubits so how do I know which qubit is the ancilla? In othwer words, how do I spexcify Qulacs where to add this trotterized circuit?
-
-    - On a similar note, is there some sort of built-in function to turn this circuit into a controlled-operator? If not, what would be the best approach to turn this into a cotrolled operation?
-
-- Hartree-Fock initial state preparation
-    - Thanks so much for the resources you provided. I understand how to prepare the HF state now, but I am just a little unsure about how many electron we have in our systrem (a 1D Hydrogen chain). I would have guessed that we have as many electrons as we have sites, thus for a 5 site chain we have a 10 qubit operator for which the HF state is $|1111100000>$. Is this correct?
